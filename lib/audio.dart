@@ -8,6 +8,7 @@ class Audio {
   Audio._();
 
   static Audio _instance;
+
   static Audio instance() {
     if (_instance == null) {
       _instance = Audio._();
@@ -24,6 +25,7 @@ class Audio {
   Future<void> play(String url,
       {String title = "",
       String subtitle = "",
+      double aspectRatio = 16 / 9,
       Duration position = Duration.zero,
       bool isLiveStream = false}) async {
     return _audioChannel.invokeMethod("play", <String, dynamic>{
@@ -32,6 +34,7 @@ class Audio {
       "subtitle": subtitle,
       "position": position.inMilliseconds,
       "isLiveStream": isLiveStream,
+      "aspectRatio": aspectRatio
     });
   }
 

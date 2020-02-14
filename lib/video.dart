@@ -25,6 +25,7 @@ class Video extends StatefulWidget {
   final bool isLiveStream;
   final Function onViewCreated;
   final PlayerState desiredState;
+  final double aspectRatio;
 
   const Video(
       {Key key,
@@ -35,7 +36,8 @@ class Video extends StatefulWidget {
       this.subtitle = "",
       this.isLiveStream = false,
       this.onViewCreated,
-      this.desiredState = PlayerState.PLAYING})
+      this.desiredState = PlayerState.PLAYING,
+      this.aspectRatio = 16 / 9})
       : super(key: key);
 
   @override
@@ -65,56 +67,62 @@ class _VideoState extends State<Video> {
     if (widget.url != null && widget.url.isNotEmpty) {
       /* Android */
       if (Platform.isAndroid) {
-        _playerWidget = AndroidView(
-          viewType: 'tv.mta/NativeVideoPlayer',
-          creationParams: {
-            "autoPlay": widget.autoPlay,
-            "showControls": widget.showControls,
-            "url": widget.url,
-            "title": widget.title ?? "",
-            "subtitle": widget.subtitle ?? "",
-            "isLiveStream": widget.isLiveStream,
-          },
-          creationParamsCodec: const JSONMessageCodec(),
-          onPlatformViewCreated: (viewId) {
-            _onPlatformViewCreated(viewId);
-            if (widget.onViewCreated != null) {
-              widget.onViewCreated(viewId);
-            }
-          },
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-            new Factory<OneSequenceGestureRecognizer>(
-              () => new EagerGestureRecognizer(),
-            ),
-          ].toSet(),
-        );
+        _playerWidget = AspectRatio(
+            aspectRatio: widget.aspectRatio,
+            child: AndroidView(
+              viewType: 'tv.mta/NativeVideoPlayer',
+              creationParams: {
+                "autoPlay": widget.autoPlay,
+                "showControls": widget.showControls,
+                "url": widget.url,
+                "title": widget.title ?? "",
+                "subtitle": widget.subtitle ?? "",
+                "isLiveStream": widget.isLiveStream,
+                "aspectRatio": widget.aspectRatio,
+              },
+              creationParamsCodec: const JSONMessageCodec(),
+              onPlatformViewCreated: (viewId) {
+                _onPlatformViewCreated(viewId);
+                if (widget.onViewCreated != null) {
+                  widget.onViewCreated(viewId);
+                }
+              },
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+            ));
       }
 
       /* iOS */
       else if (Platform.isIOS) {
-        _playerWidget = UiKitView(
-          viewType: 'tv.mta/NativeVideoPlayer',
-          creationParams: {
-            "autoPlay": widget.autoPlay,
-            "showControls": widget.showControls,
-            "url": widget.url,
-            "title": widget.title ?? "",
-            "subtitle": widget.subtitle ?? "",
-            "isLiveStream": widget.isLiveStream,
-          },
-          creationParamsCodec: const JSONMessageCodec(),
-          onPlatformViewCreated: (viewId) {
-            _onPlatformViewCreated(viewId);
-            if (widget.onViewCreated != null) {
-              widget.onViewCreated(viewId);
-            }
-          },
-          gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-            new Factory<OneSequenceGestureRecognizer>(
-              () => new EagerGestureRecognizer(),
-            ),
-          ].toSet(),
-        );
+        _playerWidget = AspectRatio(
+            aspectRatio: widget.aspectRatio,
+            child: UiKitView(
+              viewType: 'tv.mta/NativeVideoPlayer',
+              creationParams: {
+                "autoPlay": widget.autoPlay,
+                "showControls": widget.showControls,
+                "url": widget.url,
+                "title": widget.title ?? "",
+                "subtitle": widget.subtitle ?? "",
+                "isLiveStream": widget.isLiveStream,
+                "aspectRatio": widget.aspectRatio,
+              },
+              creationParamsCodec: const JSONMessageCodec(),
+              onPlatformViewCreated: (viewId) {
+                _onPlatformViewCreated(viewId);
+                if (widget.onViewCreated != null) {
+                  widget.onViewCreated(viewId);
+                }
+              },
+              gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
+                new Factory<OneSequenceGestureRecognizer>(
+                  () => new EagerGestureRecognizer(),
+                ),
+              ].toSet(),
+            ));
       }
     }
   }
@@ -193,6 +201,8 @@ class _VideoState extends State<Video> {
         "title": widget.title,
         "subtitle": widget.subtitle,
         "isLiveStream": widget.isLiveStream,
+        "showControls": widget.showControls,
+        "aspectRatio": widget.aspectRatio,
       });
     }
   }

@@ -71,6 +71,7 @@ class VideoPlayer: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterPlatfor
     var subtitle:String = ""
     var isLiveStream:Bool = false
     var showControls:Bool = false
+    var aspectRatio:Double = 16 / 9;
 
     private var mediaDuration = 0.0
     
@@ -118,6 +119,7 @@ class VideoPlayer: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterPlatfor
         self.subtitle = parsedData["subtitle"] as! String
         self.isLiveStream = parsedData["isLiveStream"] as! Bool
         self.showControls = parsedData["showControls"] as! Bool
+        self.aspectRatio = parsedData["aspectRatio"] as! Double
     }
     
     /* set Flutter event channel */
@@ -152,7 +154,7 @@ class VideoPlayer: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterPlatfor
                 self.subtitle = parsedData["subtitle"] as! String
                 self.isLiveStream = parsedData["isLiveStream"] as! Bool
                 self.showControls = parsedData["showControls"] as! Bool
-
+                self.aspectRatio = parsedData["aspectRatio"] as! Double
                 self.onMediaChanged()
                 
                 result(true)
@@ -220,14 +222,14 @@ class VideoPlayer: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterPlatfor
                                   automaticallyLoadedAssetKeys: requiredAssetKeys)
         
         let center = NotificationCenter.default
-        
+
         center.addObserver(self, selector: #selector(onComplete(_:)), name: NSNotification.Name.AVPlayerItemDidPlayToEndTime, object: self.player?.currentItem)
         center.addObserver(self, selector:#selector(onAVPlayerNewErrorLogEntry(_:)), name: .AVPlayerItemNewErrorLogEntry, object: player?.currentItem)
         center.addObserver(self, selector:#selector(onAVPlayerFailedToPlayToEndTime(_:)), name: .AVPlayerItemFailedToPlayToEndTime, object: player?.currentItem)
         
         /* setup player */
         self.player = FluterAVPlayer(playerItem: playerItem)
-        
+        player?.externalPlaybackVideoGravity = AVLayerVideoGravity.resizeAspectFill;
         if #available(iOS 12.0, *) {
             self.player?.preventsDisplaySleepDuringVideoPlayback = true
         }

@@ -282,13 +282,17 @@ class VideoPlayer: NSObject, FlutterPlugin, FlutterStreamHandler, FlutterPlatfor
                      let presentedViewController = navigationController.presentedViewController {
                          presentedViewController.addChild(playerController)
                          presentedViewController.view.addSubview(playerController.view)
-                         playerViewController?.delegate = presentedViewController as? AVPlayerViewControllerDelegate
                          playerController.didMove(toParent: presentedViewController)
+                         if #available(iOS 13.0, *) {
+                            playerViewController?.delegate = presentedViewController as? AVPlayerViewControllerDelegate
+                         }
                  } else if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
                      rootViewController.addChild(playerController)
                      rootViewController.view.addSubview(playerController.view)
-                     playerViewController?.delegate = rootViewController as? AVPlayerViewControllerDelegate
                      playerController.didMove(toParent: rootViewController)
+                     if #available(iOS 13.0, *) {
+                        playerViewController?.delegate = rootViewController as? AVPlayerViewControllerDelegate
+                     }
                  }
              }
         }
